@@ -1,0 +1,8 @@
+streamlit
+groq
+PyMuPDF
+sentence-transformers
+faiss-cpu
+python-dotenv
+requests
+feedparser
