@@ -44,6 +44,22 @@ An advanced, enterprise-grade AI agent demonstrating **RAG (Retrieval Augmented 
    streamlit run app.py
    ```
 
+## ☁️ Deployment (Streamlit Cloud)
+
+1. **Push to GitHub**: Ensure your code is on GitHub.
+2. **Login**: Go to [share.streamlit.io](https://share.streamlit.io/) and login with GitHub.
+3. **Deploy**:
+   - Click **"New App"**.
+   - Select the `sakethlingerker/Enterprise-Ready-RAG-Agent` repository.
+   - Set **Main file path** to `app.py`.
+4. **Secrets (Crucial Step)**:
+   - Click **"Advanced Settings"** -> **"Secrets"**.
+   - Add your API key:
+     ```toml
+     GROQ_API_KEY = "gsk_..."
+     ```
+   - Click **Save** and **Deploy**.
+
 ## 📂 Architecture
 
 - **`ingestion/`**:
