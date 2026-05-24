@@ -43,21 +43,28 @@ def recursive_split(text, chunk_size, overlap):
             
     return [text]
 
-def chunk_text(sections, chunk_size=800, overlap=100):
+def chunk_text(sections, parent_size=1200, parent_overlap=200, child_size=300, child_overlap=50):
     chunks = []
 
     for sec in sections:
         text = sec["content"]
         section_name = sec.get("section", "unknown")
+        page = sec["page"]
         
-        # Use recursive splitting instead of fixed stride
-        text_chunks = recursive_split(text, chunk_size, overlap)
+        # 1. Split into large Parent Chunks for broad context
+        parent_chunks = recursive_split(text, parent_size, parent_overlap)
         
-        for content in text_chunks:
-            chunks.append({
-                "content": content,
-                "page": sec["page"],
-                "section": section_name
-            })
+        for p_idx, p_content in enumerate(parent_chunks):
+            # 2. Split each Parent Chunk into small Child Chunks for precise embedding matching
+            child_chunks = recursive_split(p_content, child_size, child_overlap)
+            
+            for c_content in child_chunks:
+                chunks.append({
+                    "content": c_content,           # Embedded snippet
+                    "parent_content": p_content,    # Synthesized LLM context
+                    "page": page,
+                    "section": section_name,
+                    "parent_id": f"p_{page}_{section_name}_{p_idx}"
+                })
             
     return chunks

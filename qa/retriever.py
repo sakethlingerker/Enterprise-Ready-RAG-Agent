@@ -40,14 +40,13 @@ class DocumentRetriever:
         explicit_matches = []
         if match:
             # User specifically asked for Table X or Figure X
-            target_str = f"{match.group(1)} {match.group(2)}" # e.g. "table 11" (normalized)
             target_num = match.group(2)
             keyword_type = match.group(1) # table or figure
             
             # Scan ALL chunks for this specific reference
-            # This is fast enough for <100 page documents
             for chunk in self.chunks:
-                c_lower = chunk["content"].lower()
+                # Check both child content and larger parent content if available
+                c_lower = chunk.get("parent_content", chunk["content"]).lower()
                 # Check for "table 11" or "table.11"
                 if f"{keyword_type} {target_num}" in c_lower or f"{keyword_type}.{target_num}" in c_lower:
                     explicit_matches.append(chunk)
@@ -58,13 +57,26 @@ class DocumentRetriever:
         if explicit_matches:
             final_results.extend(explicit_matches)
         
-        # Then add retrieved semantic results (deduplicating)
-        seen_content = set(c["content"] for c in final_results)
+        # Track seen parent IDs to prevent duplicates
+        seen_parent_ids = set()
+        for chunk in final_results:
+            p_id = chunk.get("parent_id")
+            if p_id:
+                seen_parent_ids.add(p_id)
+        
+        # Deduplication tracker for parent content strings
+        seen_content = set(c.get("parent_content", c["content"]) for c in final_results)
         
         # Standard semantic results
         for chunk in retrieved:
-            if chunk["content"] not in seen_content:
+            p_id = chunk.get("parent_id")
+            chunk_content = chunk.get("parent_content", chunk["content"])
+            
+            # Deduplicate by parent ID
+            if p_id and p_id in seen_parent_ids:
+                continue
                 
+            if chunk_content not in seen_content:
                 # Apply section boosting logic for semantic hits
                 # Priority: Conclusion
                 if "conclusion" in query_lower and chunk["section"] == "conclusion":
@@ -76,7 +88,9 @@ class DocumentRetriever:
                 else:
                      final_results.append(chunk) # End of list
                 
-                seen_content.add(chunk["content"])
+                seen_content.add(chunk_content)
+                if p_id:
+                    seen_parent_ids.add(p_id)
 
         return final_results[:top_k]
 

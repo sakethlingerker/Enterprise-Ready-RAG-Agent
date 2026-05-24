@@ -7,14 +7,14 @@ An advanced, enterprise-grade AI agent demonstrating **RAG (Retrieval Augmented 
 ### 🧠 Advanced NLP
 
 - **Multi-Model Support**: Switch between **Llama 3.1**, **Llama 3.3 (70B)**, and others instantly.
-- **Semantic Chunking**: Uses recursive character splitting to preserve paragraph/sentence meaning.
+- **Parent-Child Hierarchical Chunking**: Splits text into small child chunks (300 chars) for high-precision embedding search, and links them to larger parent chunks (1200 chars) to supply rich context to the LLM.
 - **Context-Aware Memory**: Remembers previous chat turns for natural follow-up questions.
 
 ### 📄 Enterprise Ingestion Pipeline
 
-- **PDF & Table Extraction**: Parses text and **restores tables** to structured Markdown for data analysis tasks.
+- **PDF & Table Extraction**: Parses text and **restores tables** to structured Markdown for precise cell-level reasoning.
 - **Source Citations**: Every answer provides expandable verification links citing specific pages and sections.
-- **Sections Support**: Detects `Abstract`, `Conclusion`, `Results` for targeted retrieval.
+- **Sections Support**: Detects `Abstract`, `Conclusion`, `Results` for targeted retrieval and intent-aware boosting.
 
 ### 🕵️‍♂️ Agentic Capabilities
 

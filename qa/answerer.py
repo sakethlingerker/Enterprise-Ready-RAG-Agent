@@ -29,14 +29,15 @@ def generate_answer(question: str, retriever: DocumentRetriever, chunks: list, c
     context_parts = []
     used_sources = []
     for chunk in hits:
-        content = chunk.get("content", "")
+        # Use parent_content for rich context, falling back to child content
+        content = chunk.get("parent_content", chunk.get("content", ""))
         page = chunk.get("page", "N/A")
         context_parts.append(f"[Page {page}]\n{content}")
         
-        # Track sources for citation
+        # Track sources for citation (display small child content as preview snippet in UI)
         used_sources.append({
             "page": page,
-            "content": content,
+            "content": chunk.get("content", ""), # Keeps the exact matching snippet compact
             "section": chunk.get("section", "unknown")
         })
     
